@@ -13,9 +13,8 @@
 # C:/Users/Harris/Dropbox/researthon
 
 
-file0= "/Users/yegingenc/Dropbox/researthon/harris tweets/tweets0.csv"
-tweets_folder="/Users/yegingenc/Dropbox/researthon/harris tweets/tweets"
-
+file0= "C:/Users/Harris/Dropbox/researthon/harris tweets/tweets0.csv"
+tweets_folder="C:/Users/Harris/Dropbox/researthon/harris tweets/tweets"
 
 twtest1 <- read.csv(file= file0 ,header = FALSE, sep ="\t")
 
@@ -30,22 +29,18 @@ twtest1<- rbind(twtest1,twtest2)
 
 ################################################################################################################################################################
 #
-#
-#
 #        SIMPLE IMPORT
 #       
-#
-#
 #############################################################################
 
 #import the first dataset in a csv format (windows example)
-twtest1 <- read.csv(file= "C:/Users/Harris/Downloads/tweets0.csv",header = FALSE, sep ="\t")
+#twtest1 <- read.csv(file= "C:/Users/Harris/Downloads/tweets0.csv",header = FALSE, sep ="\t")
 
 # Add names in the columns
 colnames(twtest1)<- c("tweetid", "userid", "date", "sources", "tweet", "elements")
 
 #get a summary of the imported dataset
-summary(twtest1)
+#summary(twtest1)
 class(twtest1)
 #twtest10 <- twtest1[,2:10]
 #twtest1 <- twtest10
@@ -53,25 +48,35 @@ class(twtest1)
 
 
 # simplify source
-for (i in seq(1, length(twtest1$sources))){  
-  sal <- strsplit(as.character(twtest1$sources[i]), ">")[[1]][2]
-  sal <- strsplit(sal, "<")[[1]][1]
-  twtest1$source2[i] <- sal
-}
+#for (i in seq(1, length(twtest1$sources))){  
+#  sal <- strsplit(as.character(twtest1$sources[i]), ">")[[1]][2]
+#  sal <- strsplit(sal, "<")[[1]][1]
+#  twtest1$source2[i] <- sal
+#}
+
+
+
+# simplify source
+temp <- c()
+sal <- strsplit(as.character(twtest1$sources), ">")
+sal <- sapply(sal,`[`,2)
+head(sal)
+sal <- strsplit(sal, "<")
+sal <- sapply(sal,`[`,1)
+head(sal)
+twtest1$source2 <- sal
+
 class(twtest1$source2)
-  
+
 #overwrite all data
 twtest1$sourceall <- twtest1$sources
 twtest1$sources <- twtest1$source2
 twtest1$source2 <-NULL
 
 
-# merge two datasets by rows
-twtest3<- rbind(twtest1,twtest2)
-twtest <- twtest3
-rm(twtest1,twtest2, twtest3)
-summary(twtest)
-class(twtest)
+
+save(twtest1, file="twtest1.Rda")
+
 ################################################################################################################################################################
 #
 #
@@ -109,7 +114,7 @@ twtest1$sources[iphonesources][1:100]
 # blackberry
 # find all positions of sourcess that contain Blackberry as sources
 bbsources <- c()
-kw <- c("Texas Hold'em King LIVE","QuickPull","Blackberry")
+kw <- c("Texas Hold'em King LIVE","QuickPull","Blackberry", "Neatly BB10")
 
 for (i in seq(1, length(kw))){
   bbsources <- c(bbsources, grep(kw[i], twtest1$sources,ignore.case = TRUE))
@@ -135,7 +140,7 @@ twtest1$sources[wnphone]
 #mobile-not identified
 #mobile_ufo
 mobufosources <- c()
-kw <- c( "Janetter", "Write Longer", "Neatly BB10", "PicsArt Photo Studio","UnfolllowID","GREE","RuleKingdom","Airport City Mobile", "runtastic", 
+kw <- c( "Janetter", "Write Longer", "PicsArt Photo Studio","UnfolllowID","GREE","RuleKingdom","Airport City Mobile", "runtastic", 
          "Echofon","Truecaller","Scoop.it","Pulse News", "Mobile Web (M2)" , "Mobile Web (M5)" ,"Flipboard", "Instagram", "Viber")
 for (i in seq(1, length(kw))){
   mobufosources <- c(mobufosources, grep(kw[i], twtest1$sources,ignore.case = TRUE))
@@ -222,56 +227,61 @@ japansources <- unique(japansources)
 length(japansources)
 ################################################################################################################################################################
 
+twtest1$sources_cleaned <- "NotIdentified"
+twtest1$sources_cleaned[androidsource] <- "Android"
+twtest1$sources_cleaned[iphonesources] <- "iOS"
+twtest1$sources_cleaned[bbsources] <- "BlackBerry"
+twtest1$sources_cleaned[wnphone] <- "WindowsPhone"
+twtest1$sources_cleaned[mobufosources] <- "MobileUFO"
+twtest1$sources_cleaned[websources] <- "Web"
+twtest1$sources_cleaned[macsources] <- "Mac"
+twtest1$sources_cleaned[wndesk] <- "WindowsDesktop"
+twtest1$sources_cleaned[bussources] <- "BusinessSuite"
+twtest1$sources_cleaned[websources] <- "Web"
+twtest1$sources_cleaned[japansources] <- "JapanWebsite"
 
-sources_cleaned <- c()
-for (i in seq(1, length(twtest1$sources))){
-  if (is.element(i, androidsource)){
-    sources_cleaned <- c(sources_cleaned, "Android")
-  }else if (is.element(i, iphonesources)){
-    sources_cleaned <- c(sources_cleaned, "iOS")
-  }else if (is.element(i, bbsources)){
-    sources_cleaned <- c(sources_cleaned, "BlackBerry")
-  }else if (is.element(i, wnphone)){
-    sources_cleaned <- c(sources_cleaned, "WindowsPhone")
-  }else if (is.element(i, mobufosources)){
-    sources_cleaned <- c(sources_cleaned, "MobileUFO")
-  }else if (is.element(i, websources)){
-    sources_cleaned <- c(sources_cleaned, "Web")
-  }else if (is.element(i, macsources)){
-    sources_cleaned <- c(sources_cleaned, "Mac")
-  }else if (is.element(i, wndesk)){
-    sources_cleaned <- c(sources_cleaned, "WindowsDesktop")
-  }else if (is.element(i, bussources)){
-    sources_cleaned <- c(sources_cleaned, "BusinessSuite")
-  }else if (is.element(i, ufos)){
-    sources_cleaned <- c(sources_cleaned, "Personalized")
-  }else if (is.element(i, websources)){
-    sources_cleaned <- c(sources_cleaned, "Web")
-  }else if (is.element(i, japansources)){
-    sources_cleaned <- c(sources_cleaned, "JapanWebsite")
-  }else{
-    sources_cleaned <- c(sources_cleaned, "NotIdentified")
-  }
-}
-
-## check if all went well
-sources_cleaned[1:40]
-class(sources_cleaned)
+twtest1$sources_cleaned[1:100]
+summary(as.factor(twtest1$sources_cleaned))
 
 
-#change all of the columns from factors to character or number variables
-class(twtest1$user)
-twtest1$user <- as.character(twtest1$user)
-#
-# twtest1$date
 
-# Add a sources_Cleaned column
-twtest1 <- cbind(twtest1,sources_cleaned)
-#how many unidentified
-length(twtest1$sources[twtest1$sources_cleaned =="NotIdentified"])
+# REMOVE THE LOOP TO MAKE IT FASTER
+#sources_cleaned <- c()
+#for (i in seq(1, length(twtest1$sources))){
+#  if (is.element(i, androidsource)){
+#    sources_cleaned <- c(sources_cleaned, "Android")
+#  }else if (is.element(i, iphonesources)){
+#    sources_cleaned <- c(sources_cleaned, "iOS")
+#  }else if (is.element(i, bbsources)){
+#    sources_cleaned <- c(sources_cleaned, "BlackBerry")
+#  }else if (is.element(i, wnphone)){
+#    sources_cleaned <- c(sources_cleaned, "WindowsPhone")
+#  }else if (is.element(i, mobufosources)){
+#    sources_cleaned <- c(sources_cleaned, "MobileUFO")
+#  }else if (is.element(i, websources)){
+#    sources_cleaned <- c(sources_cleaned, "Web")
+#  }else if (is.element(i, macsources)){
+#    sources_cleaned <- c(sources_cleaned, "Mac")
+#  }else if (is.element(i, wndesk)){
+#    sources_cleaned <- c(sources_cleaned, "WindowsDesktop")
+#  }else if (is.element(i, bussources)){
+#    sources_cleaned <- c(sources_cleaned, "BusinessSuite")
+#  }else if (is.element(i, ufos)){
+#    sources_cleaned <- c(sources_cleaned, "Personalized")
+#  }else if (is.element(i, websources)){
+#    sources_cleaned <- c(sources_cleaned, "Web")
+#  }else if (is.element(i, japansources)){
+#    sources_cleaned <- c(sources_cleaned, "JapanWebsite")
+#  }else{
+#    sources_cleaned <- c(sources_cleaned, "NotIdentified")
+#  }
+#}
+
+
+
 
 #find the sources of the "NotIdentified"
-sort(twtest1$sources[twtest1$sources_cleaned =="NotIdentified"], decreasing=FALSE)
+head(summary(as.factor(sort(twtest1$sources[twtest1$sources_cleaned =="NotIdentified"], decreasing=FALSE))))
 
 
 ################################################################################################################################################################
@@ -347,7 +357,11 @@ tweettopic[android_bb_winphone] <- "Android_BB_WindowsPhone"
 tweettopic[ios_bb_winphone] <- "iOS_BB_WindowsPhone"
 # all 4 topics
 tweettopic[all4] <- "AllOperatingSystems"
+head(tweettopic)
+length(tweettopic)
+twtest1$tweettopic <- tweettopic
 
+summary(as.factor(twtest1$tweettopic))
 
 #confirm that unclassified tweets are indeed unrelated
 twtest1$tweet[tweettopic == "NoTweetKeywords"][1:100]
@@ -368,13 +382,15 @@ twtest1 <- twtest12
 rm(twtest12)
 
 # Write to a file, with row names
-write.csv(twtest1, "Tweets_all_merged_with_topic_and sources_30398.csv", row.names=TRUE)
+save(twtest1, file="twtest1.Rda")
+write.csv(twtest1, "Tweets_all_merged_with_topic_and sources.csv", row.names=TRUE)
+
 
 ################################################################################################################################################################
 #
 #
 #
-#           POSITION OF TWEETS FOR EACH OF THE CATEGORIES
+#           NON-SENSICAL NOTES
 #
 #
 ################################################################################
@@ -422,16 +438,4 @@ c(websources, macsources, wndesk, bussources
   #ufos --- ufos
   #JAPAN --- japansources
   ########################################  
-  
-  ##############
-  grepl returns a logical vector. You can use the ! operator if you want the opposite result.
-  data$ID[!grepl("xyx", data$ID) & data$age>60]
-  ################
-
-  
-  message(sprintf("On %s I realized %s was...\n%s by the street", Sys.Date(), person, action))
-  # Write to a file, with row names
-  #write.csv(twtest1, "tweets_clean_sources.csv", row.names=TRUE)
-  
-  
   
