@@ -11,9 +11,17 @@
 
 #first fix the final line of the file (probably missing elements)
 # C:/Users/Harris/Dropbox/researthon
-twtest1 <- read.csv(file= "C:/Users/Harris/Dropbox/researthon/harris tweets/tweets0.csv",header = FALSE, sep ="\t")
+
+
+file0= "C:/Users/Harris/Dropbox/researthon/harris tweets/tweets0.csv"
+tweets_folder="C:/Users/Harris/Dropbox/researthon/harris tweets/tweets"
+
+
+twtest1 <- read.csv(file= file0 ,header = FALSE, sep ="\t")
+
+
 for (i in seq(1,9)){
-temp <- paste("C:/Users/Harris/Dropbox/researthon/harris tweets/tweets", i,sep="")
+temp <- paste(tweets_folder, i,sep="")
 fileauto <- paste(temp, ".csv",sep="")
 twtest2 <- read.csv(file=fileauto,header = FALSE, sep ="\t")
 twtest1<- rbind(twtest1,twtest2)
