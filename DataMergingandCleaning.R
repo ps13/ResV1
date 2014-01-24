@@ -39,13 +39,13 @@ twtest1<- rbind(twtest1,twtest2)
 #############################################################################
 
 #import the first dataset in a csv format (windows example)
-twtest1 <- read.csv(file= "C:/Users/Harris/Downloads/tweets0.csv",header = FALSE, sep ="\t")
+#twtest1 <- read.csv(file= "C:/Users/Harris/Downloads/tweets0.csv",header = FALSE, sep ="\t")
 
 # Add names in the columns
 colnames(twtest1)<- c("tweetid", "userid", "date", "sources", "tweet", "elements")
 
 #get a summary of the imported dataset
-summary(twtest1)
+#summary(twtest1)
 class(twtest1)
 #twtest10 <- twtest1[,2:10]
 #twtest1 <- twtest10
@@ -53,7 +53,7 @@ class(twtest1)
 
 
 # simplify source
-for (i in seq(1, length(twtest1$source2))){  
+for (i in seq(1, length(twtest1$sources))){  
   sal <- strsplit(as.character(twtest1$sources[i]), ">")[[1]][2]
   sal <- strsplit(sal, "<")[[1]][1]
   twtest1$source2[i] <- sal
