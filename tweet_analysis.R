@@ -64,7 +64,6 @@ heatmap.2(ToyDataOrd, Rowv=FALSE, Colv=FALSE,
           key=T, keysize=1.5, density.info="none", 
           trace="none", labRow=NA)
 
-
 ##### clean data set to include only unique tweets to eliminate the problem of 
 
 
