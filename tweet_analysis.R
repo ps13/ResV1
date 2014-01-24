@@ -17,17 +17,12 @@ temp <- which(twtest1$sources_cleaned=="iOS")
 # among, them find the topic of those twee
 summary(as.factor(twtest1$tweettopic[temp]))
 
-levels(as.factor(twtest1$tweettopic))
+
+temp <- levels(as.factor(twtest1$tweettopic))
+
+for( i in seq(1,))
+# for each topic, find how many people discussed about it
 
 
-# aggregate data frame mtcars by cyl and vs, returning means
-# for numeric variables
-attach(mtcars)
-aggdata <-aggregate(mtcars, by=list(cyl,vs),
-                    FUN=mean, na.rm=TRUE)
-print(aggdata)
-detach(mtcars)
-
-
-
+levels(as.factor(twtest1$sources_cleaned))
 
