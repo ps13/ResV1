@@ -53,11 +53,27 @@ class(twtest1)
 
 
 # simplify source
-for (i in seq(1, length(twtest1$sources))){  
-  sal <- strsplit(as.character(twtest1$sources[i]), ">")[[1]][2]
-  sal <- strsplit(sal, "<")[[1]][1]
-  twtest1$source2[i] <- sal
-}
+#for (i in seq(1, length(twtest1$sources))){  
+#  sal <- strsplit(as.character(twtest1$sources[i]), ">")[[1]][2]
+#  sal <- strsplit(sal, "<")[[1]][1]
+#  twtest1$source2[i] <- sal
+#}
+
+
+
+# simplify source
+temp <- c()
+sal <- strsplit(as.character(twtest1$sources), ">")
+sal <- sapply(sal,`[`,2)
+head(sal)
+sal <- strsplit(sal, "<")
+sal <- sapply(sal,`[`,1)
+head(sal)
+twtest1$source2 <- sal
+
+
+
+
 class(twtest1$source2)
   
 #overwrite all data
@@ -72,6 +88,7 @@ twtest <- twtest3
 rm(twtest1,twtest2, twtest3)
 summary(twtest)
 class(twtest)
+
 ################################################################################################################################################################
 #
 #
