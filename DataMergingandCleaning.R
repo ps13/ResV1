@@ -16,7 +16,6 @@
 file0= "C:/Users/Harris/Dropbox/researthon/harris tweets/tweets0.csv"
 tweets_folder="C:/Users/Harris/Dropbox/researthon/harris tweets/tweets"
 
-
 twtest1 <- read.csv(file= file0 ,header = FALSE, sep ="\t")
 
 
@@ -30,12 +29,8 @@ twtest1<- rbind(twtest1,twtest2)
 
 ################################################################################################################################################################
 #
-#
-#
 #        SIMPLE IMPORT
 #       
-#
-#
 #############################################################################
 
 #import the first dataset in a csv format (windows example)
@@ -71,23 +66,16 @@ sal <- sapply(sal,`[`,1)
 head(sal)
 twtest1$source2 <- sal
 
-
-
-
 class(twtest1$source2)
-  
+
 #overwrite all data
 twtest1$sourceall <- twtest1$sources
 twtest1$sources <- twtest1$source2
 twtest1$source2 <-NULL
 
 
-# merge two datasets by rows
-twtest3<- rbind(twtest1,twtest2)
-twtest <- twtest3
-rm(twtest1,twtest2, twtest3)
-summary(twtest)
-class(twtest)
+
+save(twtest1, file="twtest1.Rda")
 
 ################################################################################################################################################################
 #
