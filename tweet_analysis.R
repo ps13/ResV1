@@ -5,6 +5,17 @@ analysisfile ="C:/Users/Harris/Dropbox/researthon/dataframes_csv/twtest1.Rda"
 load(analysisfile)
 
 
+# source: android, topic: android
+
+
+temp <- which(twtest1$sources_cleaned=="Android" & twtest1$tweettopic=="Android")
+twtest1$sources_cleaned[temp[1]]
+length(temp)
+
+length(twtest1$sources_cleaned[twtest1$sources_cleaned=="Android" & twtest1$tweettopic=="Android"])
+
+
+
 ##### clean data set to include only unique tweets to eliminate the problem of 
 
 
