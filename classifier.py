@@ -81,7 +81,6 @@ def get_tweet_features(txt, filter):
   #print [w.lower() for w in words]
   #print ""
   
-  #verniedlichungsfeature!
   
   unigram = get_word_features(words)
   all.extend(unigram)
@@ -112,10 +111,7 @@ def get_tweet_features(txt, filter):
   
   return dict([(f,w) for (f,w) in all if not f in filter])
 def get_special_word_features(text, words):
-  #TODO: iterate over words instead of using text
-  
-  #nooooooooooooooooooooooooo
-  #hahahahah
+ 
   d = []
   if re.search("[HAah][HAah][HAah]+", text) or re.search("ja[ja]+", text):
     d.append(("HAHA", True))
