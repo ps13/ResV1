@@ -13,8 +13,8 @@
 # C:/Users/Harris/Dropbox/researthon
 
 
-file0= "C:/Users/Harris/Dropbox/researthon/harris tweets/tweets0.csv"
-tweets_folder="C:/Users/Harris/Dropbox/researthon/harris tweets/tweets"
+file0= "/Users/yegingenc/Dropbox/researthon/harris tweets/tweets0.csv"
+tweets_folder="/Users/yegingenc/Dropbox/researthon/harris tweets/tweets"
 
 
 twtest1 <- read.csv(file= file0 ,header = FALSE, sep ="\t")
@@ -53,7 +53,7 @@ class(twtest1)
 
 
 # simplify source
-for (i in seq(1, length(twtest1$source2))){  
+for (i in seq(1, length(twtest1$sources))){  
   sal <- strsplit(as.character(twtest1$sources[i]), ">")[[1]][2]
   sal <- strsplit(sal, "<")[[1]][1]
   twtest1$source2[i] <- sal
