@@ -7,8 +7,6 @@
 #
 #
 ################################################################################################################################################################
-
-
 #first fix the final line of the file (probably missing elements)
 # C:/Users/Harris/Dropbox/researthon
 
@@ -18,7 +16,6 @@ tweets_folder="C:/Users/Harris/Dropbox/researthon/harris tweets/tweets"
 
 twtest1 <- read.csv(file= file0 ,header = FALSE, sep ="\t")
 
-
 for (i in seq(1,9)){
 temp <- paste(tweets_folder, i,sep="")
 fileauto <- paste(temp, ".csv",sep="")
@@ -27,7 +24,7 @@ twtest1<- rbind(twtest1,twtest2)
 }
 
 
-################################################################################################################################################################
+#########################################################################################################################
 #
 #        SIMPLE IMPORT
 #       
@@ -72,8 +69,6 @@ class(twtest1$source2)
 twtest1$sourceall <- twtest1$sources
 twtest1$sources <- twtest1$source2
 twtest1$source2 <-NULL
-
-
 
 save(twtest1, file="twtest1.Rda")
 
@@ -143,7 +138,7 @@ mobufosources <- c()
 kw <- c( "Janetter", "Write Longer", "PicsArt Photo Studio","UnfolllowID","GREE","RuleKingdom","Airport City Mobile", "runtastic", 
          "Echofon","Truecaller","Scoop.it","Pulse News", "Mobile Web (M2)" , "Mobile Web (M5)" ,"Flipboard", "Instagram", "Viber")
 for (i in seq(1, length(kw))){
-  mobufosources <- c(mobufosources, grep(kw[i], twtest1$sources,ignore.case = TRUE))
+  mobufosources <- c(mobufosources, grep(kw[i], twtest1$sources, ignore.case = TRUE))
 }
 #get only the unique values in the list
 mobufosources <- unique(mobufosources)
@@ -189,7 +184,8 @@ length(wndesk)
 #Business Suites
 bussources <- c()
 kw <- c("Buffer" ,"HootSuite","IFTTT" ,"Scope App","WPTweetily","dlvr.it","Spread The Next Web","Thirst for Topics",
-        "SocialEngage","SocialOomph","SharedBy", "MarketMeSuite","Sprout Social","SNS Analytics","GroupTweet")
+        "SocialEngage","SocialOomph","SharedBy", "MarketMeSuite","Sprout Social","SNS Analytics","GroupTweet","TweetAdder v4",
+        "Mobile Web (M2)")
 for (i in seq(1, length(kw))){
   bussources <- c(bussources, grep(kw[i], twtest1$sources,ignore.case = TRUE))
 }
@@ -201,7 +197,8 @@ length(bussources)
 # no idea what they are and personalized sourcess
 ufos <- c()
 kw <- c("hisobot","txt","Gravity!","multibt","GamerNews","AboutDiablo.com",
-        "Water Filters Cartridges Site","byodrt","socnet2socnet","imbetjoy","Twit Posts RU","Rewwwind","FileDir.com", "LinkedIn")
+        "Water Filters Cartridges Site","byodrt","socnet2socnet","imbetjoy","Twit Posts RU","Rewwwind",
+        "FileDir.com", "LinkedIn","TwitCasting","mPOINTS Mobile Rewards", "Gratis Retweet")
 for (i in seq(1, length(kw))){
   ufos <- c(ufos, grep(kw[i], twtest1$sources,ignore.case = TRUE))
 }
@@ -227,18 +224,19 @@ japansources <- unique(japansources)
 length(japansources)
 ################################################################################################################################################################
 
+
 twtest1$sources_cleaned <- "NotIdentified"
-twtest1$sources_cleaned[androidsource] <- "Android"
-twtest1$sources_cleaned[iphonesources] <- "iOS"
-twtest1$sources_cleaned[bbsources] <- "BlackBerry"
-twtest1$sources_cleaned[wnphone] <- "WindowsPhone"
+twtest1$sources_cleaned[japansources] <- "JapanWebsite"
 twtest1$sources_cleaned[mobufosources] <- "MobileUFO"
 twtest1$sources_cleaned[websources] <- "Web"
 twtest1$sources_cleaned[macsources] <- "Mac"
 twtest1$sources_cleaned[wndesk] <- "WindowsDesktop"
 twtest1$sources_cleaned[bussources] <- "BusinessSuite"
-twtest1$sources_cleaned[websources] <- "Web"
-twtest1$sources_cleaned[japansources] <- "JapanWebsite"
+twtest1$sources_cleaned[androidsource] <- "Android"
+twtest1$sources_cleaned[iphonesources] <- "iOS"
+twtest1$sources_cleaned[bbsources] <- "BlackBerry"
+twtest1$sources_cleaned[wnphone] <- "WindowsPhone"
+
 
 twtest1$sources_cleaned[1:100]
 summary(as.factor(twtest1$sources_cleaned))
