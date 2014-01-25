@@ -13,6 +13,8 @@ summary(as.factor(temp))
 #add them as an attribute to the dataset
 twtest4$language <- temp
 # create a submatrix containing the ones in english
+eng<- which(twtest4$language=="english")
+twtest5 <- twtest4[eng,]
 
 
 
