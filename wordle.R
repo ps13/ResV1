@@ -17,12 +17,29 @@ eng<- which(twtest4$language=="english")
 twtest5 <- twtest4[eng,]
 
 
+###########################################################################################################
+# How to identify/delete non-UTF-8 characters in R
+class(twtest5$tweet)
+twtest5$tweet <- as.character(twtest5$tweet)
+x <- twtest5$tweet
+Encoding(x) <- "UTF-8"
+# save them
+utf <- iconv(x, "UTF-8", "UTF-8",sub='') ## replace any non UTF-8 by ''
+head(utf)
+twtest5$tweet <- utf
+
+save(twtest5, file="twtest5.Rda")
+write.csv(twtest5, "twtest5.csv", row.names=TRUE)
+
 
 ###########################################################################################################
 #SENTIMENT ANALYSIS USING tm Package in R
 library("tm")
 install.packages("tm.plugin.tags", repos = "http://datacube.wu.ac.at", type = "source")
 library('tm.plugin.tags')
+
+
+
 
 
 
