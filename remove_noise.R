@@ -44,6 +44,9 @@ twtest4 <- twtest3[-game,]
 
 head(twtest4$tweet)
 save(twtest4, file="twtest4.Rda")
+write.csv(twtest4, "twtest4.csv", row.names=TRUE)
+
+
 
 
 
