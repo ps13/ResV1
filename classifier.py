@@ -13,6 +13,7 @@ from nltk.metrics import BigramAssocMeasures
 from nltk.classify.svm import SvmClassifier
 #import svmlight
 from collections import defaultdict
+from sklearn.metrics import f1_score,classification_report, confusion_matrix
 
 # search patterns for features
 
@@ -300,7 +301,7 @@ sorted_features = [w for (w,s) in sorted_feature_scores]
 
 print "length of sorted features: " + str(len(sorted_features))
 
-worst = sorted_feature_scores[3000:]
+worst = sorted_feature_scores[2000:]
 #print worst
 worstfeaturesfilter = set([w for w, s in worst])
 #print worstfeaturesfilter
@@ -314,11 +315,76 @@ num_train = int(0.8 * len(tweets)) # 80% training - 20%testing
 #filter the feature vectors:
 fvecs = [(get_tweet_features(t, worstfeaturesfilter),s) for (t,s) in tweets]
 #print fvecs
-v_train = fvecs[0:num_train]
+v_train = fvecs
 #print v_train
-#v_train = fvecs
-v_test  = fvecs[num_train:len(tweets)]
-#print v_test
+
+
+#--------
+testfp = open( '/Users/'+username+'/Dropbox/researthon/sentiment/ios.csv', 'rb' )
+reader = csv.reader( testfp, delimiter=',', quotechar='"', escapechar='\\' )
+testtweets = []
+for row in reader:
+    try:
+        testtweets.append( [row[0].encode('utf-8',"replace"), row[1] ])
+    except UnicodeDecodeError: 
+        pass
+#Extracting features from data
+tfvecs = [(get_tweet_features(t, set()),s) for (t,s) in testtweets]
+#pprint.pprint(fvecs)
+
+# Extract best word features
+tword_fd = FreqDist()
+tlabel_word_fd = ConditionalFreqDist()
+#
+for (tfeats, tlabel) in tfvecs:
+  #print tlabel
+  for tkey in tfeats:
+    #print tkey
+    if tfeats[tkey]:
+      tword_fd.inc(tkey)
+      #print tword_fd
+      tlabel_word_fd[tlabel].inc(tkey)
+      #print tlabel_word_fd[label]
+#
+##print tword_fd['positive']
+##print tlabel_word_fd      
+print tlabel_word_fd.conditions()
+tcls_set=tlabel_word_fd.conditions()
+#
+tpos_word_count = tlabel_word_fd['positive'].N()
+tneg_word_count = tlabel_word_fd['negative'].N()
+ttotal_word_count = tpos_word_count + tneg_word_count
+
+tfeature_scores = {}
+
+for tfeature, tfreq in tword_fd.iteritems():
+  #print feature, freq
+  tpos_score = BigramAssocMeasures.chi_sq(tlabel_word_fd['positive'][tfeature],
+                                         (tfreq, tpos_word_count), ttotal_word_count)
+  #print pos_score                                
+  tneg_score = BigramAssocMeasures.chi_sq(tlabel_word_fd['negative'][tfeature],
+                                         (tfreq, tneg_word_count), ttotal_word_count)
+  #print neg_score
+  tfeature_scores[tfeature] = tpos_score + tneg_score
+
+#print feature_scores
+
+tsorted_feature_scores = sorted(tfeature_scores.iteritems(), key=lambda (w,s): s, reverse=True)
+tsorted_features = [w for (w,s) in tsorted_feature_scores]
+#print "best features:"
+#for w in sorted_features[0:100]:
+#  print w
+
+print "length of sorted features: " + str(len(tsorted_features))
+
+tworst = tsorted_feature_scores[2000:]
+#print worst
+tworstfeaturesfilter = set([w for w, s in tworst])
+#print worstfeaturesfilter
+
+tfvecs = [(get_tweet_features(t, tworstfeaturesfilter),s) for (t,s) in testtweets]
+v_test  = tfvecs
+#-----
 
 # dump tweets which our feature selector 
 for i in range(0,len(tweets)):
@@ -329,67 +395,76 @@ for i in range(0,len(tweets)):
 #DIFFERENT CLASSIFIERS       
 #classifier = SvmClassifier.train(v_train) # Doesn't work right now!
 #classifier = nltk.classify.maxent.train_maxent_classifier_with_gis(v_train) # Ave accr: 0.69 (slow)
-#classifier = nltk.classify.maxent.train_maxent_classifier_with_iis(v_train) #Ave accr: 0.72 (very slow)
+classifier = nltk.classify.maxent.train_maxent_classifier_with_iis(v_train) #Ave accr: 0.72 (very slow)
 #classifier = nltk.classify.maxent.train_maxent_classifier_with_scipy(v_train, algorithm='BFGS') #Doesn't work on my comp!
 #classifier = nltk.NaiveBayesClassifier.train(v_train) # Ave accr: 0.60(fast)
 
 
-#----------------------LinearSVC------------
-from sklearn.svm import LinearSVC
-from nltk.classify.scikitlearn import SklearnClassifier
-# SVM with a Linear Kernel and default parameters 
-classifier = SklearnClassifier(LinearSVC())
-classifier.train(v_train)
-
-
-test_skl = []
-t_test_skl = []
-for d in v_test:
- test_skl.append(d[0])
- t_test_skl.append(d[1])
-
-# run the classifier on the train test
-p = classifier.batch_classify(test_skl)
-from sklearn.metrics import classification_report
-# getting a full report
-print classification_report(t_test_skl, p, labels=list(set(t_test_skl)),target_names=cls_set)
-#---------------------End of LinearSVC ---------
+###----------------------LinearSVC------------
+#from sklearn.svm import LinearSVC
+#from nltk.classify.scikitlearn import SklearnClassifier
+## SVM with a Linear Kernel and default parameters 
+#classifier = SklearnClassifier(LinearSVC())
+#classifier.train(v_train)
+#
+#
+#test_skl = []
+#t_test_skl = []
+#for d in v_test:
+# test_skl.append(d[0])
+# #print test_skl
+# t_test_skl.append(d[1])
+#
+## run the classifier on the train test
+#p = classifier.batch_classify(test_skl)
+#
+## getting a full report
+#print classification_report(t_test_skl, p, labels=list(set(t_test_skl)),target_names=cls_set)
+##---------------------End of LinearSVC ---------
 
 #classifier.show_most_informative_features(n=500)
 
-#refsets = defaultdict(set)
-#testsets = defaultdict(set)
-#
-#for i, (feats, label) in enumerate(v_test):
-#  refsets[label].add(i)
-#  observed = classifier.classify(feats)
-#  testsets[observed].add(i)
-#  
+refsets = defaultdict(set)
+testsets = defaultdict(set)
+
+for i, (feats, label) in enumerate(v_test):
+  refsets[label].add(i)
+  observed = classifier.classify(feats)
+  testsets[observed].add(i)
+  
 #print refsets
 #print testsets
-#
-#print 'accuracy %f' % nltk.classify.accuracy(classifier, v_test)
-#print 'pos precision:', nltk.metrics.precision(refsets['positive'], testsets['positive'])
-#print 'pos recall:', nltk.metrics.recall(refsets['positive'], testsets['positive'])
-#print 'pos F-measure:', nltk.metrics.f_measure(refsets['positive'], testsets['positive'])
-#print 'neg precision:', nltk.metrics.precision(refsets['negative'], testsets['negative'])
-#print 'neg recall:', nltk.metrics.recall(refsets['negative'], testsets['negative'])
-#print 'neg F-measure:', nltk.metrics.f_measure(refsets['negative'], testsets['negative'])
-#
-#print 'Confusion Matrix'
-#test_truth   = [s for (t,s) in v_test]
-#test_predict = [classifier.classify(t) for (t,s) in v_test]
-#print nltk.ConfusionMatrix( test_truth, test_predict )
-#
-## Print wrongly classified ones
-##i=0
-##for (t,s) in v_test:
-##  predlabel = classifier.classify(t)
-##  if s != predlabel:
-##    print "classified as %s but is %s" % (predlabel, s)
-##    (text, label) = tweets[num_train+i]
-##    print text
-##    print t
-##    #print classifier.explain(t)
-##    print ""
-##  i+=1
+
+print 'accuracy %f' % nltk.classify.accuracy(classifier, v_test)
+print 'pos precision:', nltk.metrics.precision(refsets['positive'], testsets['positive'])
+print 'pos recall:', nltk.metrics.recall(refsets['positive'], testsets['positive'])
+print 'pos F-measure:', nltk.metrics.f_measure(refsets['positive'], testsets['positive'])
+print 'neg precision:', nltk.metrics.precision(refsets['negative'], testsets['negative'])
+print 'neg recall:', nltk.metrics.recall(refsets['negative'], testsets['negative'])
+print 'neg F-measure:', nltk.metrics.f_measure(refsets['negative'], testsets['negative'])
+
+print 'Confusion Matrix'
+test_truth   = [s for (t,s) in v_test]
+test_predict = [classifier.classify(t) for (t,s) in v_test]
+print nltk.ConfusionMatrix( test_truth, test_predict )
+
+dic={'positive':0, 'neutral':1, 'negative':2}
+y_true=map(lambda x: dic[x], test_truth)
+y_predict=map(lambda x: dic[x], test_predict)
+
+print(classification_report(test_truth,test_predict,target_names=dic.keys()))
+
+print f1_score(test_truth, test_predict, average='micro')
+
+# Print wrongly classified ones
+#i=0
+#for (t,s) in v_test:
+#  predlabel = classifier.classify(t)
+#  if s != predlabel:
+#    print "classified as %s but is %s" % (predlabel, s)
+#    (text, label) = tweets[num_train+i]
+#    print text
+#    print t
+#    #print classifier.explain(t)
+#    print ""
+#  i+=1
