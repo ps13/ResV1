@@ -81,6 +81,7 @@ def get_tweet_features(txt, filter):
   #print [w.lower() for w in words]
   #print ""
   
+  #verniedlichungsfeature!
   
   unigram = get_word_features(words)
   all.extend(unigram)
@@ -106,12 +107,10 @@ def get_tweet_features(txt, filter):
   emoticonfeatures = get_emoticon_features(txt)
   all.extend(emoticonfeatures)
   
-  #url domain extractor
-  #http://t.co/x6BI96Ib -> URLt.co
   
   return dict([(f,w) for (f,w) in all if not f in filter])
 def get_special_word_features(text, words):
- 
+  
   d = []
   if re.search("[HAah][HAah][HAah]+", text) or re.search("ja[ja]+", text):
     d.append(("HAHA", True))
@@ -226,7 +225,22 @@ for row in reader:
         tweets.append( [row[0].encode('utf-8',"replace"), row[1] ])
     except UnicodeDecodeError: 
         pass
-#print tweets
+p=0
+n=0
+nt=0
+for i in range(0,len(tweets)):
+    #print tweets[i][1]
+    if tweets[i][1]=='positive':
+        p+=1
+    elif tweets[i][1]=='negative':
+        n+=1
+    else:
+        nt+=1
+        
+print "Positive: " + str(p)
+print "Negative: " + str(n)
+print "Neutral: " + str(nt)
+        
 
 
 # Extracting features
@@ -253,7 +267,8 @@ for (feats, label) in fvecs:
 #
 ##print word_fd['positive']
 ##print label_word_fd      
-##print label_word_fd
+print label_word_fd.conditions()
+cls_set=label_word_fd.conditions()
 #
 #
 pos_word_count = label_word_fd['positive'].N()
@@ -314,46 +329,67 @@ for i in range(0,len(tweets)):
 #DIFFERENT CLASSIFIERS       
 #classifier = SvmClassifier.train(v_train) # Doesn't work right now!
 #classifier = nltk.classify.maxent.train_maxent_classifier_with_gis(v_train) # Ave accr: 0.69 (slow)
-classifier = nltk.classify.maxent.train_maxent_classifier_with_iis(v_train) #Ave accr: 0.72 (very slow)
+#classifier = nltk.classify.maxent.train_maxent_classifier_with_iis(v_train) #Ave accr: 0.72 (very slow)
 #classifier = nltk.classify.maxent.train_maxent_classifier_with_scipy(v_train, algorithm='BFGS') #Doesn't work on my comp!
 #classifier = nltk.NaiveBayesClassifier.train(v_train) # Ave accr: 0.60(fast)
 
 
+#----------------------LinearSVC------------
+from sklearn.svm import LinearSVC
+from nltk.classify.scikitlearn import SklearnClassifier
+# SVM with a Linear Kernel and default parameters 
+classifier = SklearnClassifier(LinearSVC())
+classifier.train(v_train)
+
+
+test_skl = []
+t_test_skl = []
+for d in v_test:
+ test_skl.append(d[0])
+ t_test_skl.append(d[1])
+
+# run the classifier on the train test
+p = classifier.batch_classify(test_skl)
+from sklearn.metrics import classification_report
+# getting a full report
+print classification_report(t_test_skl, p, labels=list(set(t_test_skl)),target_names=cls_set)
+#---------------------End of LinearSVC ---------
+
 #classifier.show_most_informative_features(n=500)
 
-refsets = defaultdict(set)
-testsets = defaultdict(set)
-
-for i, (feats, label) in enumerate(v_test):
-  refsets[label].add(i)
-  observed = classifier.classify(feats)
-  testsets[observed].add(i)
-  
-print refsets
-print testsets
-
-print 'accuracy %f' % nltk.classify.accuracy(classifier, v_test)
-print 'pos precision:', nltk.metrics.precision(refsets['positive'], testsets['positive'])
-print 'pos recall:', nltk.metrics.recall(refsets['positive'], testsets['positive'])
-print 'pos F-measure:', nltk.metrics.f_measure(refsets['positive'], testsets['positive'])
-print 'neg precision:', nltk.metrics.precision(refsets['negative'], testsets['negative'])
-print 'neg recall:', nltk.metrics.recall(refsets['negative'], testsets['negative'])
-print 'neg F-measure:', nltk.metrics.f_measure(refsets['negative'], testsets['negative'])
-
-print 'Confusion Matrix'
-test_truth   = [s for (t,s) in v_test]
-test_predict = [classifier.classify(t) for (t,s) in v_test]
-print nltk.ConfusionMatrix( test_truth, test_predict )
-
-# Print wrongly classified ones
-#i=0
-#for (t,s) in v_test:
-#  predlabel = classifier.classify(t)
-#  if s != predlabel:
-#    print "classified as %s but is %s" % (predlabel, s)
-#    (text, label) = tweets[num_train+i]
-#    print text
-#    print t
-#    #print classifier.explain(t)
-#    print ""
-#  i+=1
+#refsets = defaultdict(set)
+#testsets = defaultdict(set)
+#
+#for i, (feats, label) in enumerate(v_test):
+#  refsets[label].add(i)
+#  observed = classifier.classify(feats)
+#  testsets[observed].add(i)
+#  
+#print refsets
+#print testsets
+#
+#print 'accuracy %f' % nltk.classify.accuracy(classifier, v_test)
+#print 'pos precision:', nltk.metrics.precision(refsets['positive'], testsets['positive'])
+#print 'pos recall:', nltk.metrics.recall(refsets['positive'], testsets['positive'])
+#print 'pos F-measure:', nltk.metrics.f_measure(refsets['positive'], testsets['positive'])
+#print 'neg precision:', nltk.metrics.precision(refsets['negative'], testsets['negative'])
+#print 'neg recall:', nltk.metrics.recall(refsets['negative'], testsets['negative'])
+#print 'neg F-measure:', nltk.metrics.f_measure(refsets['negative'], testsets['negative'])
+#
+#print 'Confusion Matrix'
+#test_truth   = [s for (t,s) in v_test]
+#test_predict = [classifier.classify(t) for (t,s) in v_test]
+#print nltk.ConfusionMatrix( test_truth, test_predict )
+#
+## Print wrongly classified ones
+##i=0
+##for (t,s) in v_test:
+##  predlabel = classifier.classify(t)
+##  if s != predlabel:
+##    print "classified as %s but is %s" % (predlabel, s)
+##    (text, label) = tweets[num_train+i]
+##    print text
+##    print t
+##    #print classifier.explain(t)
+##    print ""
+##  i+=1
