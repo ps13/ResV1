@@ -33,15 +33,15 @@ for line in lines:
     
 df=pd.read_csv('sentiment_corpus.csv', header=0)
 
-api = twitter.Api(consumer_secret='C00nSzpC4508tqkYVaOP3KZGwfOPCXEBGmaaVXLo',\
-                  consumer_key='4izIDgFD12NqIBeGCN8VA',\
-                  access_token_key='89115036-P0JAxz91ORhON3fBqnzU30HhKKZfbekxBfgcF82GC',\
-                  access_token_secret='6ymuu9Gd4EDgoVusGIMxQyakXxK0sWO1JYJoPDs8uaOlk')
+# api = twitter.Api(consumer_secret='C00nSzpC4508tqkYVaOP3KZGwfOPCXEBGmaaVXLo',\
+#                   consumer_key='4izIDgFD12NqIBeGCN8VA',\
+#                   access_token_key='89115036-P0JAxz91ORhON3fBqnzU30HhKKZfbekxBfgcF82GC',\
+#                   access_token_secret='6ymuu9Gd4EDgoVusGIMxQyakXxK0sWO1JYJoPDs8uaOlk')
 
-# api = twitter.Api(consumer_secret='aTHfRwjbwPKHfGtBM9rwt6Qko8jHAEnnRlZ7m5muc',\
-#                  consumer_key='XMNiN0Aw3S74MPqhAflhpQ',\
-#                  access_token_key='14307977-W28juG3Irm7h14cBkWqUnSsZWsRUsw06x6h1i8iIv',\
-#                  access_token_secret='729lmn1hUJ4e9X4hCCDwBUGvyySDTf8fIxlCc2Htj5gxY')
+api = twitter.Api(consumer_secret='aTHfRwjbwPKHfGtBM9rwt6Qko8jHAEnnRlZ7m5muc',\
+                 consumer_key='XMNiN0Aw3S74MPqhAflhpQ',\
+                 access_token_key='14307977-W28juG3Irm7h14cBkWqUnSsZWsRUsw06x6h1i8iIv',\
+                 access_token_secret='729lmn1hUJ4e9X4hCCDwBUGvyySDTf8fIxlCc2Htj5gxY')
 
 print 'already existing\n',texts_old
 for row in df.iterrows():
@@ -66,7 +66,7 @@ for row in df.iterrows():
             
             print 'couldn\'t find'
             
-            if sys.exc_info()[1][0][0]['code'] in [34,179]:
+            if sys.exc_info()[1][0][0]['code'] in [34,179,63]:
                 texts_missing.append(id)
                 continue
             else:
