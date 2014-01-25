@@ -24,8 +24,9 @@ utf <- iconv(x, "UTF-8", "UTF-8",sub='') ## replace any non UTF-8 by ''
 head(utf)
 twtest5$tweet <- utf
 
-save(twtest5, file="twtest5.Rda")
-write.csv(twtest5, "twtest5.csv", row.names=TRUE)
+twtest6 <- twtest5
+save(twtest6, file="twtest6.Rda")
+write.csv(twtest6, "twtest6.csv", row.names=TRUE)
 
 
 ###########################################################################################################
