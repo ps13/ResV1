@@ -3,3 +3,5 @@ sentiment_scrape.pyc
 sentiment_with_text
 cleaner.pyc
 missing.csv
+tweetscrape_by_id.pyc
+classifier_yegin.pyc
